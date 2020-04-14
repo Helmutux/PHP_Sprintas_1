@@ -7,7 +7,7 @@ Naudojant PHP sukurti failų naršyklę. Reikalavimai jai:
 4. Galimybė ištrinti failus (direktorijų trinti nereikia). //done
 5. Galimybė įkelti failus. //done
 6. Aplikacija yra apsaugota autentikacijos mechanizmu (reikia prisijungti). //done
-7. Galimybė parsisiųsti failus. 
+7. Galimybė parsisiųsti failus. //done
 -->
 
 <?php
