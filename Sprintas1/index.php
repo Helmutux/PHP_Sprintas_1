@@ -1,17 +1,16 @@
-<!-- 
-UZDUOTIS
-Naudojant PHP sukurti failų naršyklę. Reikalavimai jai: 
-1. Galimybė matyti failus ir/ar direktorijas. //done
-2. Galimybė vaikščioti po katalogus bei matyti jų turinį. //done
-3. Galimybė sukurti naujas direktorijas. //done
-4. Galimybė ištrinti failus (direktorijų trinti nereikia). //done
-5. Galimybė įkelti failus. //done
-6. Aplikacija yra apsaugota autentikacijos mechanizmu (reikia prisijungti). //done
-7. Galimybė parsisiųsti failus. //done
--->
-
 <?php
-    //startuoja sesija
+// UZDUOTIS
+// Naudojant PHP sukurti failų naršyklę. Reikalavimai jai: 
+// 1. Galimybė matyti failus ir/ar direktorijas. //done
+// 2. Galimybė vaikščioti po katalogus bei matyti jų turinį. //done
+// 3. Galimybė sukurti naujas direktorijas. //done
+// 4. Galimybė ištrinti failus (direktorijų trinti nereikia). //done
+// 5. Galimybė įkelti failus. //done
+// 6. Aplikacija yra apsaugota autentikacijos mechanizmu (reikia prisijungti). //done
+// 7. Galimybė parsisiųsti failus. //done
+
+
+//startuoja sesija
     session_start();
     
     $error = false; //loginis kintamasis, kuri naudosime, noredami aktyvuoti salyga autorizacijos su netinkamais duomenimis atveju. Pirmine reiksme - klaidos nera, tam kad dar neissiuntus username ir password negautume pranesimo apie klaida
@@ -67,71 +66,70 @@ Naudojant PHP sukurti failų naršyklę. Reikalavimai jai:
     
 ?>
 <?php
-// bylos ikelimo i atverta kataloga algoritmas;
-$message = ''; 
-if (isset($_POST['uploadBtn']) && $_POST['uploadBtn'] == 'Įkelti')
-{
-  if (isset($_FILES['uploadedFile']) && $_FILES['uploadedFile']['error'] === UPLOAD_ERR_OK)
-  {
-    // gauname informacija apie ikeliama byla
-    $fileTmpPath = $_FILES['uploadedFile']['tmp_name'];
-    $fileName = $_FILES['uploadedFile']['name'];
-    $fileSize = $_FILES['uploadedFile']['size'];
-    $fileType = $_FILES['uploadedFile']['type'];
-    $fileNameCmps = explode(".", $fileName);
-    $fileExtension = strtolower(end($fileNameCmps));
-
-    // sia komanda galime pervardyti (panaudojant md5) faila, noredami isvengti tarpu ir specsimboliu panaudojimo pavadinime. as nusprndziau jos nenaudoti
-    // $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
-
-    // nurodome, kokius failus sistema leis (uzkrauti priimti)
-    $allowedfileExtensions = array('jpg', 'gif', 'png', 'zip', 'txt', 'xls', 'doc', 'rar', 'xlsx', 'docx', 'ppt', 'rtf', 'pdf');
-
-    if (in_array($fileExtension, $allowedfileExtensions))
+    // bylos ikelimo i atverta kataloga algoritmas;
+    $message = ''; 
+    if (isset($_POST['uploadBtn']) && $_POST['uploadBtn'] == 'Įkelti')
     {
-      // aprasome kelia i kataloga, kuriame issaugosime uzkrauta byla
-      $uploadFileDir = './' . $_GET["path"] ;
-      $dest_path = $uploadFileDir . $fileName;
+    if (isset($_FILES['uploadedFile']) && $_FILES['uploadedFile']['error'] === UPLOAD_ERR_OK)
+    {
+        // gauname informacija apie ikeliama byla
+        $fileTmpPath = $_FILES['uploadedFile']['tmp_name'];
+        $fileName = $_FILES['uploadedFile']['name'];
+        $fileSize = $_FILES['uploadedFile']['size'];
+        $fileType = $_FILES['uploadedFile']['type'];
+        $fileNameCmps = explode(".", $fileName);
+        $fileExtension = strtolower(end($fileNameCmps));
 
-      if(move_uploaded_file($fileTmpPath, $dest_path)) 
-      {
-        $message ='Byla sėkmingai užkrauta.';
-      }
-      else 
-      {
-        $message = 'Klaida užkraunant bylą. Patikrinkite, ar įkrovos katalogas serveryje leidžia įrašyti siunčiamą bylą.';
-      }
+        // sia komanda galime pervardyti (panaudojant md5) faila, noredami isvengti tarpu ir specsimboliu panaudojimo pavadinime. as nusprndziau jos nenaudoti
+        // $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+
+        // nurodome, kokius failus sistema leis (uzkrauti priimti)
+        $allowedfileExtensions = array('jpg', 'gif', 'png', 'zip', 'txt', 'xls', 'doc', 'rar', 'xlsx', 'docx', 'ppt', 'rtf', 'pdf');
+
+        if (in_array($fileExtension, $allowedfileExtensions))
+        {
+        // aprasome kelia i kataloga, kuriame issaugosime uzkrauta byla
+        $uploadFileDir = './' . $_GET["path"] ;
+        $dest_path = $uploadFileDir . $fileName;
+
+        if(move_uploaded_file($fileTmpPath, $dest_path)) 
+        {
+            $message ='Byla sėkmingai užkrauta.';
+        }
+        else 
+        {
+            $message = 'Klaida užkraunant bylą. Patikrinkite, ar įkrovos katalogas serveryje leidžia įrašyti siunčiamą bylą.';
+        }
+        }
+        else
+        {
+        $message = 'Atsiuntimas negalimas. Leidžiamos tik šių tipų bylos: ' . implode(',', $allowedfileExtensions);
+        }
     }
     else
     {
-      $message = 'Atsiuntimas negalimas. Leidžiamos tik šių tipų bylos: ' . implode(',', $allowedfileExtensions);
+        $message = 'There is some error in the file upload. Please check the following error.<br>';
+        $message .= 'Error:' . $_FILES['uploadedFile']['error'];
     }
-  }
-  else
-  {
-    $message = 'There is some error in the file upload. Please check the following error.<br>';
-    $message .= 'Error:' . $_FILES['uploadedFile']['error'];
-  }
-}
-$_SESSION['message'] = $message;
+    }
+    $_SESSION['message'] = $message;
 ?>
 <?php
     // bylų parsisiuntimo algoritmas
     if(isset($_POST['download'])){
-        print('Path to download: ' . './' . $_GET["path"] . $_POST['download']);
+       
         $file='./' . $_GET["path"] . $_POST['download'];
         $fileToDownloadEscaped = str_replace("&nbsp;", " ", htmlentities($file, null, 'utf-8'));
 
         header('Content-Description: File Transfer');
-        header('Content-Type: application/pdf'); // mime type → ši forma turėtų veikti daugumai failų, su šiuo mime type. Jei neveiktų reiktų daryti sudėtingesnę logiką
+        header('Content-Type: application/pdf');
         header('Content-Disposition: attachment; filename=' . basename($fileToDownloadEscaped));
         header('Content-Transfer-Encoding: binary');
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: public');
-        header('Content-Length: ' . filesize($fileToDownloadEscaped)); // kiek baitų browseriui laukti, jei 0 - failas neveiks nors bus sukurtas
+        header('Content-Length: ' . filesize($fileToDownloadEscaped));
 
-        flush();
         readfile($fileToDownloadEscaped);
         exit;
     }
@@ -397,7 +395,6 @@ else
             background: green;
             color: white;
             border: 1px solid darkgrey;
-            /* text-decoration: none; */
             padding: 0.5em;
             margin-top: 0.5em;
             margin-bottom: 0.5em;
